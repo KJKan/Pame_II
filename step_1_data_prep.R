@@ -6,7 +6,7 @@ library( "dplyr" )
 library( "MASS")
 
 # clear work space, not run
-rm(list = ls())
+rm( list = ls() )
 
 # load some helper functions
 source("https://raw.githubusercontent.com/KJKan/nwsem/master/nwsem_helper_functions.R")
