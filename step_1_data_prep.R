@@ -14,12 +14,12 @@ rm( list = ls() )
 source( "https://raw.githubusercontent.com/KJKan/nwsem/master/nwsem_helper_functions.R" )
 
 # Load WAIS-IV correlation matrices
-load( url ( "https://github.com/KJKan/mcfarland/blob/master/WAIS_Hungary.Rdata?raw=true" ) )
 load( url ( "https://github.com/KJKan/mcfarland/blob/master/WAIS_US.Rdata?raw=true" ) )
+load( url ( "https://github.com/KJKan/pame_I/blob/main/WAIS_Germany.Rdata?raw=true" ) )
 
 # WAIS-IV sample Sizes
 n_US      <- 1800 
-n_Hungary <- 1112 
+n_Germany <- 1425 
 
 # The WAIS-IV subtests; observed variables 
 yvars     <- colnames( WAIS_US )
@@ -28,7 +28,7 @@ yvars     <- colnames( WAIS_US )
 ny        <- length( yvars ) 
 
 # covariance matrix used in psychonetrics models
-cov       <- ( n_Hungary - 1 )/n_Hungary*WAIS_Hungary
+cov       <- ( n_Germany - 1 )/n_Germany*WAIS_Germany
 
 # latent constructs to be measured (etas)
 lvars     <- c( "P", # Perceptual
@@ -76,7 +76,7 @@ NWModel_US <- NWModel_US %>% prune( alpha = 0.01, recursive = TRUE )
 # Aim for further improvement
 NWModel_US <- NWModel_US %>% stepup 
 
-# Extract the adjacency matrix and use it as confirmatory network in the Hungarian sample
+# Extract the adjacency matrix and use it as confirmatory network in the German sample
 omega      <- 1*( getmatrix( NWModel_US, "omega" ) !=0 )
 
 
@@ -85,7 +85,7 @@ omega      <- 1*( getmatrix( NWModel_US, "omega" ) !=0 )
 # --- Higher order g factor model
 
 # The data as OpenMx object
-Data <- mxData( WAIS_Hungary, type = "cov", numObs = n_Hungary )
+Data <- mxData( WAIS_Germany, type = "cov", numObs = n_Germany )
 
 # Matrix containing the first order factor loadings 
 Lambda_g <- mxMatrix( name = 'Lambda',
@@ -161,35 +161,6 @@ gModel <-mxModel( name = 'g Model',
                   Obj,
                   mxFitFunctionML() )
 
-# Fit the model 
-gFit <- mxRun( gModel )
-
-# Result 
-( gRes <- summary( gFit ) )
-
-# Model Statistics: 
-#                |  Parameters  |  Degrees of Freedom  |  Fit (-2lnL units)
-#        Model:             34                     86              6418.175
-#    Saturated:            120                      0              5926.817
-# Independence:             15                    105             16665.000
-# Number of observations/statistics: 1112/120
-#
-# chi-square:  χ² ( df=86 ) = 491.3574,  p = 4.283958e-58
-# Information Criteria: 
-#       |  df Penalty  |  Parameters Penalty  |  Sample-Size Adjusted
-# AIC:       319.3574               559.3574                 561.5672
-# BIC:      -111.8394               729.8305                 621.8378
-# CFI: 0.9618781 
-# TLI: 0.9534558   (also known as NNFI) 
-# RMSEA:  0.06510546  [95% CI (0.05849712, 0.07182382)]
-
-# psychonetrics
-# Fit: 
-#  - Model Fit Test Statistic: 491.36 
-#  - Degrees of freedom: 86 
-#  - p-value (Chi-square): < 0.0001
-
-
 # --- Bifactor model
 
 # Matrix containing the first order factor loadings 
@@ -224,15 +195,6 @@ bModel <-mxModel( name = 'Bifactor model',
                   ExpCor,
                   Obj,
                   mxFitFunctionML() )
-
-# Fit the model 
-bFit <- mxRun( bModel )
-
-# Result 
-( bRes <- summary( bFit ) )
-
-# compare
-mxCompare( bFit, gFit )
 
 
 # --- Network model
@@ -275,20 +237,22 @@ NWModel <- mxModel(name = 'Network Model',
                    Obj,
                    mxFitFunctionML() )
 
-# Fit the model 
+# ------------------------------ Fit and compare the OpenMx models
+
+# Fit the models
+gFit  <- mxRun( gModel )
+bFit  <- mxRun( bModel )
 NWFit <- mxRun( NWModel )
 
-# Result 
+# Print results
+( gRes  <- summary( gFit ) )
+( bRes  <- summary( bFit ) )
 ( NWRes <- summary( NWFit )  )
 
-
-# ------------------------------ Compare the OpenMx models
-
-
 # Compare
-mxCompare( NWFit, bFit )
 mxCompare( bFit,  gFit )
 mxCompare( NWFit, gFit )
+mxCompare( NWFit, bFit )
 
 
 # ------------------------------ Extract the model implied correlation matrices
