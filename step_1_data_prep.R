@@ -1,3 +1,5 @@
+# -------------- Preparation; getting the model implied matrices
+
 # load required R packages
 library( "OpenMx" )
 library( "psychonetrics" )
@@ -9,7 +11,7 @@ library( "MASS")
 rm( list = ls() )
 
 # load some helper functions
-source("https://raw.githubusercontent.com/KJKan/nwsem/master/nwsem_helper_functions.R")
+source( "https://raw.githubusercontent.com/KJKan/nwsem/master/nwsem_helper_functions.R" )
 
 # Load WAIS-IV correlation matrices
 load( url ( "https://github.com/KJKan/mcfarland/blob/master/WAIS_Hungary.Rdata?raw=true" ) )
