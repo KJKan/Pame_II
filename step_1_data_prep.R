@@ -247,7 +247,7 @@ NWFit <- mxRun( NWModel )
 # Print results
 ( gRes  <- summary( gFit ) )
 ( bRes  <- summary( bFit ) )
-( NWRes <- summary( NWFit )  )
+( NWRes <- summary( NWFit ) )
 
 # Compare
 mxCompare( bFit,  gFit )
